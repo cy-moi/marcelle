@@ -1,8 +1,10 @@
+import type { FeathersService, Application as FeathersApplication } from '@feathersjs/feathers';
 import io from 'socket.io-client';
 import authentication from '@feathersjs/authentication-client';
-import feathers, { Application, Service } from '@feathersjs/feathers';
+import { feathers } from '@feathersjs/feathers';
 import socketio from '@feathersjs/socketio-client';
-import memoryService from 'feathers-memory';
+import type { Service } from '@feathersjs/memory';
+import { memory as memoryService } from '@feathersjs/memory';
 import localStorageService from 'feathers-localstorage';
 import { addObjectId, renameIdField, createDate, updateDate, findDistinct } from './hooks';
 import { logger } from '../logger';
@@ -10,6 +12,18 @@ import Login from './Login.svelte';
 import { throwError } from '../../utils/error-handling';
 import { Stream } from '../stream';
 import { noop } from '../../utils/misc';
+
+interface ServiceTypes {
+  [key: string]: Service;
+}
+
+export type Application = FeathersApplication<ServiceTypes>;
+
+export declare type MarcelleService<T> = FeathersService<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Application,
+  Service<T, Partial<T>>
+>;
 
 function isValidUrl(str: string) {
   try {
@@ -52,10 +66,18 @@ export class DataStore {
     if (isValidUrl(location)) {
       this.backend = DataStoreBackend.Remote;
       const socket = io(location, {
-        transports: ['websocket'],
+        // transports: ['websocket'],
         reconnectionAttempts: 3,
       });
-      this.feathers.configure(socketio(socket, { timeout: 5000 }));
+      this.feathers.configure(
+        socketio(socket, {
+          timeout: 5000,
+          paginate: {
+            default: 100,
+            max: 1000,
+          },
+        }),
+      );
       this.#initPromise = new Promise((resolve) => {
         this.feathers.io.on('init', ({ auth }: { auth: boolean }) => {
           this.requiresAuth = auth;
@@ -75,11 +97,11 @@ export class DataStore {
           multi: true,
           paginate: {
             default: 100,
-            max: 200,
+            max: 1000,
           },
         });
       this.#createService = (name: string) => {
-        this.feathers.use(`/${name}`, storageService(name));
+        this.feathers.use(`/${name}`, storageService(name) as unknown as Service);
       };
     } else if (location === 'memory') {
       this.backend = DataStoreBackend.Memory;
@@ -90,7 +112,7 @@ export class DataStore {
             id: '_id',
             paginate: {
               default: 100,
-              max: 200,
+              max: 1000,
             },
           }),
         );
@@ -184,7 +206,7 @@ export class DataStore {
     document.location.reload();
   }
 
-  service(name: string): Service<unknown> {
+  service(name: string) {
     if (!Object.keys(this.feathers.services).includes(name)) {
       this.#createService(name);
       this.$services.set(Object.keys(this.feathers.services));

@@ -1,6 +1,7 @@
-import type { Paginated, Params, Service } from '@feathersjs/feathers';
+import type { Paginated, Params } from '@feathersjs/feathers';
 import { cloneDeep } from 'lodash';
 import { LazyIterable } from '../../utils/lazy-iterable/lazy-iterable';
+import type { MarcelleService } from './data-store';
 
 interface ServiceIterableParams {
   query: Params['query'];
@@ -11,7 +12,10 @@ interface ServiceIterableParams {
 export class ServiceIterable<T> extends LazyIterable<T> {
   params: ServiceIterableParams;
 
-  constructor(private readonly service: Service<T>, params: Partial<ServiceIterableParams> = {}) {
+  constructor(
+    private readonly service: MarcelleService<T>,
+    params: Partial<ServiceIterableParams> = {},
+  ) {
     super(async function* () {
       const p = { query: {}, skip: 0, take: -1, ...params };
       const take = p.take;
@@ -73,6 +77,6 @@ export class ServiceIterable<T> extends LazyIterable<T> {
   }
 }
 
-export function iterableFromService<T>(service: Service<T>): ServiceIterable<T> {
+export function iterableFromService<T>(service: MarcelleService<T>): ServiceIterable<T> {
   return new ServiceIterable(service);
 }

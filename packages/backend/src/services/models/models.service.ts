@@ -1,18 +1,25 @@
 import type { Request } from 'express';
-import type { ServiceAddons } from '@feathersjs/feathers';
 import type { Application } from '../../declarations';
 import fs from 'fs';
 import path from 'path';
 import multer, { FileFilterCallback } from 'multer';
-import GridFsStorage from 'multer-gridfs-storage';
+import { GridFsStorage } from 'multer-gridfs-storage';
 import { GridFSBucket, ObjectId } from 'mongodb';
-import express from '@feathersjs/express';
+import { authenticate as expressAuthenticate } from '@feathersjs/express';
 import { Models as ModelsNeDB } from './models-nedb.class';
 import { Models as ModelsMongoDB } from './models-mongodb.class';
 import createModel from '../../models/models-nedb.model';
 import hooks from './models.hooks';
 import genId from '../../utils/objectid';
-import { HookContext } from '@feathersjs/feathers';
+import { HookContext } from '../../declarations';
+
+// Add this service to the service type index
+declare module '../../declarations' {
+  interface ServiceTypes {
+    'tfjs-models': ModelsNeDB;
+    'onnx-models': ModelsNeDB;
+  }
+}
 
 type ModelType = 'tfjs' | 'onnx';
 
@@ -39,7 +46,7 @@ function setupModelService(app: Application, modelType: ModelType, useGridfs: bo
     };
 
     // Initialize our service with any options it requires
-    app.use(`/${modelType}-models`, new ModelsNeDB(options, app));
+    app.use(`${modelType}-models`, new ModelsNeDB(options, app));
   } else if (app.get('database') === 'mongodb') {
     const options = {
       paginate: app.get('paginate'),
@@ -47,16 +54,16 @@ function setupModelService(app: Application, modelType: ModelType, useGridfs: bo
     };
 
     // Initialize our service with any options it requires
-    app.use(`/${modelType}-models`, new ModelsMongoDB(options, app, modelType));
+    app.use(`${modelType}-models`, new ModelsMongoDB(options, app, modelType) as any);
   } else {
     throw new Error('Invalid database type: only "nedb" or "mongodb" are currently supported');
   }
 
   // Get our initialized service so that we can register hooks
-  const service = app.service(`${modelType}-models`) as ModelsNeDB & ServiceAddons<any>;
+  const service = app.service(`${modelType}-models`);
 
   const h = hooks(app.get('authentication').enabled, modelType, useGridfs);
-  service.hooks(h);
+  service.hooks(h as any); // TODO: Fix this (Dove)
 
   if (app.get('authentication').enabled) {
     service.publish((data: any, context: HookContext) => {
@@ -154,7 +161,7 @@ export default (modelType: ModelType): ((app: Application) => void) => {
 
     const postMiddlewares = [];
     if (app.get('authentication').enabled) {
-      postMiddlewares.push(express.authenticate('jwt'));
+      postMiddlewares.push(expressAuthenticate('jwt'));
     }
     if (!useGridfs) {
       postMiddlewares.push(diskPostPrepare);
@@ -224,15 +231,14 @@ export default (modelType: ModelType): ((app: Application) => void) => {
 
     const getMiddlewares = [];
     if (app.get('authentication').enabled) {
-      getMiddlewares.push(express.authenticate('jwt'));
+      getMiddlewares.push(expressAuthenticate('jwt'));
       // Actually check if the parent model is public or user!
     }
     getMiddlewares.push(useGridfs ? getModelFileFromGridfs : getModelFileFromDisk);
-
-    app.get(
+    app.use(
       `/${modelType}-models/:id/:filename`,
       // TODO: add authorization
       ...getMiddlewares,
-    );
+    ); // TODO: ensure it's get?
   };
 };

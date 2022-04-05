@@ -73,27 +73,6 @@ async function generate_templates() {
     'node_modules/@marcellejs/backend/config/production.json',
     path.join(dir, 'production.json'),
   );
-  //   backendDefaultConfig.mongodb = '"mongodb://localhost:27017/<%= h.changeCase.snake(name) %>"';
-  //   backendDefaultConfig.database = '<%= database %>';
-  //   backendDefaultConfig.authentication.enabled = '<%= auth %>';
-  //   let contents = JSON.stringify(backendDefaultConfig, null, '  ');
-  //   let header = `---\nto: backend/config/default.json\n---\n`;
-  //   contents = `${header}${contents}`;
-  //   fs.writeFileSync(path.join(dir, `default.json.ejs.t`), contents);
-  //   contents = JSON.stringify(backendProdConfig, null, '  ');
-  //   header = `---\nto: backend/config/production.json\n---\n`;
-  //   contents = `${header}${contents}`;
-  //   fs.writeFileSync(path.join(dir, `production.json.ejs.t`), contents);
-  //   const backendVersion = JSON.parse(fs.readFileSync('package.json', 'utf8')).devDependencies[
-  //     '@marcellejs/backend'
-  //   ].replace('workspace:', '');
-  //   contents = `---
-  // inject: true
-  // to: package.json
-  // after: dependencies
-  // ---
-  // "@marcellejs/backend":"${backendVersion}",`;
-  //   fs.writeFileSync(path.join(dir, `package.json.ejs.t`), contents);
 }
 
 async function main() {

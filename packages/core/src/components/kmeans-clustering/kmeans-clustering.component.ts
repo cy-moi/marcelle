@@ -61,7 +61,7 @@ export class KMeansClustering extends Model<number[][], ClusteringResults> {
     dataset: Dataset<number[][], undefined> | ServiceIterable<Instance<number[][], undefined>>,
   ): Promise<void> {
     this.$training.set({ status: 'start', epochs: 1 });
-    const ds = isDataset(dataset) ? dataset.items() : dataset;
+    const ds = isDataset<number[][], undefined>(dataset) ? dataset.items() : dataset;
     for await (const { x } of ds) {
       this.dataset.push(x[0]);
     }
@@ -103,7 +103,7 @@ export class KMeansClustering extends Model<number[][], ClusteringResults> {
   async batchPredict(dataset: Dataset<number[][], undefined>): Promise<ClusteringResults[]> {
     // const allInstances = await dataset.getAllInstances(['features']);
     const data: number[][][] = []; //allInstances.map((x) => x.features[0]);
-    const ds = isDataset(dataset) ? dataset.items() : dataset;
+    const ds = isDataset<number[][], undefined>(dataset) ? dataset.items() : dataset;
     for await (const { x } of ds) {
       data.push(x);
     }

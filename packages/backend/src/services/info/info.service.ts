@@ -1,12 +1,23 @@
 import { Application } from '../../declarations';
 import { getRegisteredServices } from '../../utils/registered-services';
 
+class InfoService {
+  constructor(public app: Application) {}
+
+  async find() {
+    return {
+      services: await getRegisteredServices(this.app),
+    };
+  }
+}
+
+// Add this service to the service type index
+declare module '../../declarations' {
+  interface ServiceTypes {
+    info: InfoService;
+  }
+}
+
 export default function (app: Application): void {
-  app.use('/info', {
-    async find() {
-      return {
-        services: await getRegisteredServices(app),
-      };
-    },
-  });
+  app.use('info', new InfoService(app));
 }

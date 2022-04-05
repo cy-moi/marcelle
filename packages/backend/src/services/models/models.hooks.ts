@@ -1,9 +1,9 @@
 import path from 'path';
-import { HookContext, HooksObject } from '@feathersjs/feathers';
 import { iff, setNow } from 'feathers-hooks-common';
 import rmdir from '../../utils/rmdir';
 import { GridFSBucket, ObjectId } from 'mongodb';
 import { authCreateHooks, authHooks } from '../../utils/permission-hooks';
+import { HookContext } from '../../declarations';
 // Don't remove this comment. It's needed to format import lines nicely.
 
 const removeModelFilesFromDisk = (modelType: string) => async (context: HookContext) => {
@@ -50,7 +50,7 @@ const removeModelFilesFromGridfs = async (context: HookContext) => {
 const removeModelFiles = (modelType: string, useGridfs: boolean) =>
   useGridfs ? removeModelFilesFromGridfs : removeModelFilesFromDisk(modelType);
 
-export default (requireAuth: boolean, modelType: string, useGridfs: boolean): HooksObject => {
+export default (requireAuth: boolean, modelType: string, useGridfs: boolean) => {
   return {
     before: {
       all: authHooks(requireAuth),
@@ -64,7 +64,10 @@ export default (requireAuth: boolean, modelType: string, useGridfs: boolean): Ho
       ],
       patch: [
         ...authCreateHooks(requireAuth),
-        iff((context) => context.data?.files, removeModelFiles(modelType, useGridfs)),
+        iff(
+          (context) => context.data?.files,
+          removeModelFiles(modelType, useGridfs) as any, // TODO: Fix this (Dove)
+        ),
         setNow('updatedAt'),
       ],
       remove: [removeModelFiles(modelType, useGridfs)],

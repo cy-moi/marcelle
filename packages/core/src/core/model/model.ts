@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import type { Paginated, Service } from '@feathersjs/feathers';
+import type { Paginated } from '@feathersjs/feathers';
 import type { Dataset } from '../dataset';
 import type { Instance, ObjectId, Parametrable, StoredModel, TrainingStatus } from '../types';
 import type { ServiceIterable } from '../data-store/service-iterable';
@@ -9,6 +9,7 @@ import { checkProperty } from '../../utils/error-handling';
 import { Component } from '../component';
 import { logger } from '../logger';
 import { toKebabCase } from '../../utils/string';
+import type { MarcelleService } from '../data-store/data-store';
 
 export interface ModelOptions {
   dataStore: DataStore;
@@ -36,7 +37,8 @@ export abstract class Model<InputType, OutputType> extends Component implements 
   }
 
   abstract train(
-    dataset: Dataset<InputType, unknown> | ServiceIterable<Instance<InputType, unknown>>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dataset: Dataset<InputType, any> | ServiceIterable<Instance<InputType, any>>,
   ): void;
   abstract predict(x: InputType): Promise<OutputType>;
 
@@ -49,8 +51,8 @@ export abstract class Model<InputType, OutputType> extends Component implements 
   abstract download(metadata?: Record<string, unknown>): Promise<void>;
   abstract upload(...files: File[]): Promise<StoredModel>;
 
-  get service(): Service<StoredModel> {
-    return this.dataStore?.service(this.serviceName) as Service<StoredModel>;
+  get service(): MarcelleService<StoredModel> {
+    return this.dataStore?.service(this.serviceName);
   }
 
   @checkProperty('dataStore')
@@ -133,7 +135,7 @@ export abstract class Model<InputType, OutputType> extends Component implements 
             updatedAt: -1,
           },
         },
-      })) as Paginated<StoredModel>;
+      })) as unknown as Paginated<StoredModel>;
       if (data.length === 1) {
         model = data[0];
       }

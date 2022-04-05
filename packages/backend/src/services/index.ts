@@ -1,4 +1,3 @@
-import debuggerService from 'feathers-debugger-service';
 import { Application } from '../declarations';
 import assets from './assets/assets.service';
 import models from './models/models.service';
@@ -8,17 +7,6 @@ import infoService from './info/info.service';
 // Don't remove this comment. It's needed to format import lines nicely.
 
 export default function (app: Application): void {
-  // enable it only on development
-  if (process.env.NODE_ENV !== 'production') {
-    // the service comes with default options predefined,
-    // you can override it if you wish to, see Options below
-    app.configure(
-      debuggerService({
-        filename: `${app.get('nedb')}/debug.db`,
-      }),
-    );
-  }
-
   const allowedAssets = app.get('whitelist').assets;
   if (!Array.isArray(allowedAssets) || allowedAssets.length > 0) {
     app.configure(assets);

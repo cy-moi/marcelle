@@ -1,16 +1,14 @@
 // Initializes the `users` service on path `/users`
-import { ServiceAddons } from '@feathersjs/feathers';
-import { Application } from '../../declarations';
+import { Application, HookContext } from '../../declarations';
 import { Users as UsersNeDB } from './users-nedb.class';
 import { Users as UsersMongoDB } from './users-mongodb.class';
 import createModel from '../../models/users-nedb.model';
 import hooks from './users.hooks';
-import { HookContext } from '@feathersjs/feathers';
 
 // Add this service to the service type index
 declare module '../../declarations' {
   interface ServiceTypes {
-    users: UsersNeDB & ServiceAddons<any>;
+    users: UsersNeDB;
   }
 }
 
@@ -24,7 +22,7 @@ export default function (app: Application): void {
     };
 
     // Initialize our service with any options it requires
-    app.use('/users', new UsersNeDB(options, app));
+    app.use('users', new UsersNeDB(options, app));
   } else if (app.get('database') === 'mongodb') {
     const options = {
       paginate: app.get('paginate'),
@@ -32,7 +30,7 @@ export default function (app: Application): void {
     };
 
     // Initialize our service with any options it requires
-    app.use('/users', new UsersMongoDB(options, app));
+    app.use('users', new UsersMongoDB(options, app) as any as UsersNeDB); // TODO: Fix this (Dove)
   } else {
     throw new Error('Invalid database type: only "nedb" or "mongodb" are currently supported');
   }
@@ -40,7 +38,7 @@ export default function (app: Application): void {
   // Get our initialized service so that we can register hooks
   const service = app.service('users');
 
-  service.hooks(hooks);
+  service.hooks(hooks as any); // TODO: Fix this (Dove)
 
   if (app.get('authentication').enabled) {
     service.publish((data, context: HookContext) => {

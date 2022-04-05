@@ -1,7 +1,7 @@
 import * as feathersAuthentication from '@feathersjs/authentication';
 import * as local from '@feathersjs/authentication-local';
 import { Forbidden } from '@feathersjs/errors';
-import { HookContext } from '@feathersjs/feathers';
+import { HookContext } from '../../declarations';
 import { iff } from 'feathers-hooks-common';
 import checkPermissions from 'feathers-permissions';
 // Don't remove this comment. It's needed to format import lines nicely.
@@ -47,7 +47,7 @@ async function removePermissions(context: HookContext): Promise<HookContext> {
 
 const adminOrSelf = iff(
   (context) => context.params?.provider !== undefined && !!context.params?.user?._id,
-  checkPermissions({ roles: ['admin'], error: false }),
+  checkPermissions({ roles: ['admin'], error: false }) as any, // TODO: Fix this (Dove)
   iff(
     (context) => `${context.id}` !== `${context.params?.user?._id}`,
     () => {

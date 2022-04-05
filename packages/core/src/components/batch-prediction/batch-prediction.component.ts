@@ -1,8 +1,8 @@
 import type { Prediction, Instance } from '../../core/types';
-import type { Paginated, Service } from '@feathersjs/feathers';
+import type { Paginated } from '@feathersjs/feathers';
 import { Component } from '../../core/component';
 import { Stream } from '../../core/stream';
-import { DataStore } from '../../core/data-store/data-store';
+import { DataStore, MarcelleService } from '../../core/data-store/data-store';
 import { Dataset, isDataset } from '../../core/dataset';
 import { dataStore, logger, Model } from '../../core';
 import { iterableFromService, ServiceIterable } from '../../core/data-store/service-iterable';
@@ -20,7 +20,7 @@ export class BatchPrediction extends Component {
   name: string;
 
   #store: DataStore;
-  predictionService: Service<Prediction>;
+  predictionService: MarcelleService<Prediction>;
 
   $status = new Stream<BatchPredictionStatus>({ status: 'loading' }, true);
 
@@ -42,7 +42,7 @@ export class BatchPrediction extends Component {
 
   async setup(): Promise<void> {
     const serviceName = toKebabCase(`predictions-${this.name}`);
-    this.predictionService = this.#store.service(serviceName) as Service<Prediction>;
+    this.predictionService = this.#store.service(serviceName);
 
     const { total } = (await this.predictionService.find({
       query: { $limit: 1, $select: ['id'] },
@@ -55,9 +55,11 @@ export class BatchPrediction extends Component {
     dataset: Dataset<T, string> | ServiceIterable<Instance<T, string>>,
   ): Promise<void> {
     try {
-      const total = isDataset(dataset) ? dataset.$count.value : (await dataset.toArray()).length;
+      const total = isDataset<T, string>(dataset)
+        ? dataset.$count.value
+        : (await dataset.toArray()).length;
       this.$status.set({ status: 'start' });
-      const ds = isDataset(dataset) ? dataset.items() : dataset;
+      const ds = isDataset<T, string>(dataset) ? dataset.items() : dataset;
       let i = 0;
       for await (const { id, x, y } of ds) {
         const prediction = await model.predict(x);

@@ -1,4 +1,4 @@
-import { HookContext, HooksObject, Paginated } from '@feathersjs/feathers';
+import { HookContext, Paginated } from '@feathersjs/feathers';
 import { setNow } from 'feathers-hooks-common';
 import { authCreateHooks, authHooks } from '../../utils/permission-hooks';
 // Don't remove this comment. It's needed to format import lines nicely.
@@ -50,7 +50,7 @@ const findDistinct = (db: string) => {
   }
 };
 
-export default (dbType: string, requireAuth: boolean): HooksObject => {
+export default (dbType: string, requireAuth: boolean) => {
   return {
     before: {
       all: authHooks(requireAuth),

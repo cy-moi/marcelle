@@ -126,10 +126,10 @@ export class MLPClassifier extends TFJSBaseModel<TensorLike, ClassifierResults> 
   async train(
     dataset: Dataset<TensorLike, string> | ServiceIterable<Instance<TensorLike, string>>,
   ): Promise<void> {
-    this.labels = isDataset(dataset)
+    this.labels = isDataset<TensorLike, string>(dataset)
       ? await dataset.distinct('y')
       : (this.labels = Array.from(new Set(await dataset.map(({ y }) => y).toArray())));
-    const ds = isDataset(dataset) ? dataset.items() : dataset;
+    const ds = isDataset<TensorLike, string>(dataset) ? dataset.items() : dataset;
     this.$training.set({ status: 'start', epochs: this.parameters.epochs.get() });
     if (this.labels.length === 0) {
       throwError(new TrainingError('This dataset is empty or is missing labels'));

@@ -1,6 +1,5 @@
 import * as authentication from '@feathersjs/authentication';
-import { Hook } from '@feathersjs/feathers';
-import { HookContext } from '@feathersjs/feathers';
+import { HookContext } from '../declarations';
 import { setField } from 'feathers-authentication-hooks';
 import { iff } from 'feathers-hooks-common';
 import checkPermissions from 'feathers-permissions';
@@ -8,7 +7,7 @@ import checkPermissions from 'feathers-permissions';
 
 const { authenticate } = authentication.hooks;
 
-async function limitToUserOrPublic(context: HookContext) {
+async function limitToUserOrPublic(context: HookContext): Promise<HookContext> {
   const { type } = context;
   let { params } = context;
 
@@ -41,18 +40,21 @@ async function limitToUserOrPublic(context: HookContext) {
   return context;
 }
 
-export const authHooks = (requireAuth: boolean): Hook[] => {
+export const authHooks = (requireAuth: boolean) => {
   if (requireAuth) {
     return [
       authenticate('jwt'),
       checkPermissions({ roles: ['admin'], error: false }),
-      iff((context) => !context.params.permitted, limitToUserOrPublic),
+      iff(
+        (context) => !context.params.permitted,
+        limitToUserOrPublic as any, // TODO: Fix this (Dove)
+      ),
     ];
   }
   return [];
 };
 
-export const authCreateHooks = (requireAuth: boolean): Hook[] => {
+export const authCreateHooks = (requireAuth: boolean) => {
   if (requireAuth) {
     return [setField({ from: 'params.user._id', as: 'data.userId' })];
   }

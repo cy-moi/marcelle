@@ -48,10 +48,11 @@ export class KNNClassifier extends Model<TensorLike, ClassifierResults> {
   async train(
     dataset: Dataset<TensorLike, string> | ServiceIterable<Instance<TensorLike, string>>,
   ): Promise<void> {
-    this.labels = isDataset(dataset)
+    const isDs = isDataset<TensorLike, string>(dataset);
+    this.labels = isDs
       ? await dataset.distinct('y')
       : (this.labels = Array.from(new Set(await dataset.map(({ y }) => y).toArray())));
-    const ds = isDataset(dataset) ? dataset.items() : dataset;
+    const ds = isDs ? dataset.items() : dataset;
     if (this.labels.length < 1) {
       this.$training.set({ status: 'error' });
       throw new Error('Cannot train a kNN with no classes');

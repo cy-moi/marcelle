@@ -1,10 +1,4 @@
-import type {
-  Paginated,
-  Service,
-  Params as FeathersParams,
-  Query,
-  HookContext,
-} from '@feathersjs/feathers';
+import type { Paginated, Params as FeathersParams, Query, HookContext } from '@feathersjs/feathers';
 import type { Instance, ObjectId } from '../types';
 import { Stream } from '../stream';
 import { logger } from '../logger';
@@ -17,6 +11,7 @@ import { readJSONFile, saveBlob } from '../../utils/file-io';
 import { toKebabCase } from '../../utils/string';
 import { mergeDeep } from '../../utils';
 import sift from 'sift';
+import type { MarcelleService } from '../data-store/data-store';
 
 interface DatasetChange {
   level: 'instance' | 'dataset';
@@ -32,7 +27,7 @@ export class Dataset<InputType, OutputType> extends Component {
   #store: DataStore;
   ready: Promise<void>;
 
-  instanceService: Service<Instance<InputType, OutputType>>;
+  instanceService: MarcelleService<Instance<InputType, OutputType>>;
   query: Query = {};
 
   $count: Stream<number> = new Stream(0, true);
@@ -58,9 +53,7 @@ export class Dataset<InputType, OutputType> extends Component {
 
   protected async setup(): Promise<void> {
     const instanceServiceName = toKebabCase(`instances-${this.name}`);
-    this.instanceService = this.#store.service(instanceServiceName) as Service<
-      Instance<InputType, OutputType>
-    >;
+    this.instanceService = this.#store.service(instanceServiceName);
 
     this.instanceService.hooks({
       before: {
@@ -173,7 +166,7 @@ export class Dataset<InputType, OutputType> extends Component {
     id: ObjectId,
     instance: Instance<InputType, OutputType>,
     params?: FeathersParams,
-  ): Promise<Instance<InputType, OutputType>> {
+  ): Promise<Instance<InputType, OutputType> | Instance<InputType, OutputType>[]> {
     return this.instanceService.update(id, instance, params);
   }
 
@@ -181,11 +174,14 @@ export class Dataset<InputType, OutputType> extends Component {
     id: ObjectId,
     changes: Partial<Instance<InputType, OutputType>>,
     params?: FeathersParams,
-  ): Promise<Instance<InputType, OutputType>> {
+  ): Promise<Instance<InputType, OutputType> | Instance<InputType, OutputType>[]> {
     return this.instanceService.patch(id, changes, params);
   }
 
-  async remove(id: ObjectId, params?: FeathersParams): Promise<Instance<InputType, OutputType>> {
+  async remove(
+    id: ObjectId,
+    params?: FeathersParams,
+  ): Promise<Instance<InputType, OutputType> | Instance<InputType, OutputType>[]> {
     return this.instanceService.remove(id, params);
   }
 

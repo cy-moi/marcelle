@@ -1,9 +1,10 @@
-import type { Paginated, Service } from '@feathersjs/feathers';
+import type { Paginated } from '@feathersjs/feathers';
 import type { DataStore } from '../../core/data-store';
 import { logger, Model, Component, Stream, TrainingRun, TrainingStatus } from '../../core';
 import { preventConcurrentCalls } from '../../utils/asynchronicity';
 import { noop } from '../../utils/misc';
 import View from './training-history.view.svelte';
+import type { MarcelleService } from '../../core/data-store/data-store';
 
 function appendLogs(logs: Record<string, unknown>, d: Record<string, unknown>) {
   const l = { ...logs };
@@ -29,7 +30,7 @@ export class TrainingHistory<InputType, OutputType> extends Component {
   $selection = new Stream<TrainingRun[]>([], true);
   $actions = new Stream<{ name: string; data: TrainingRun }>(null).skip(1);
 
-  runService: Service<TrainingRun>;
+  runService: MarcelleService<TrainingRun>;
   options: TrainingHistoryOptions;
   model: Model<InputType, OutputType>;
 
@@ -49,7 +50,7 @@ export class TrainingHistory<InputType, OutputType> extends Component {
     this.ready = this.ready
       .then(() => this.dataStore.connect())
       .then(() => {
-        this.runService = this.dataStore.service('runs') as Service<TrainingRun>;
+        this.runService = this.dataStore.service('runs');
       })
       .catch(() => {
         logger.log('[dataset] dataStore connection failed');

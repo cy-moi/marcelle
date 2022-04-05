@@ -2,8 +2,8 @@
   "host": "localhost",
   "port": 3030,
   "database": "nedb",
-  "nedb": "../data",
-  "uploads": "../uploads",
+  "nedb": "./backend/data",
+  "uploads": "./backend/uploads",
   "mongodb": "mongodb://localhost:27017/marcelle_backend",
   "gridfs": true,
   "whitelist": {

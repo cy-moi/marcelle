@@ -1,9 +1,9 @@
 import logger from './logger';
 import app from './app';
 
-export default function runBackend(): void {
+export default async function runBackend(): Promise<void> {
   const port = app.get('port');
-  const server = app.listen(port);
+  const server = await app.listen(port);
 
   process.on('unhandledRejection', (reason, p) =>
     logger.error('Unhandled Rejection at: Promise ', p, reason),

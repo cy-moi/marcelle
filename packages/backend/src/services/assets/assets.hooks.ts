@@ -1,6 +1,6 @@
 import path from 'path';
 import * as authentication from '@feathersjs/authentication';
-import { HookContext, HooksObject } from '@feathersjs/feathers';
+import { HookContext } from '../../declarations';
 import { setNow } from 'feathers-hooks-common';
 import { setField } from 'feathers-authentication-hooks';
 import rmdir from '../../utils/rmdir';
@@ -18,7 +18,7 @@ const removeAssetFiles = async (context: HookContext) => {
   return context;
 };
 
-export default (requireAuth: boolean): HooksObject => {
+export default (requireAuth: boolean) => {
   const authHooks = requireAuth
     ? [authenticate('jwt'), setField({ from: 'params.user._id', as: 'params.query.userId' })]
     : [];
