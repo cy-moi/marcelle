@@ -1,4 +1,4 @@
-import { button, dataset, datasetTable, text, fileUpload, textArea } from '@marcellejs/core';
+import { button, dataset, datasetTable, text, fileUpload, textArea, textInput } from '@marcellejs/core';
 // import readJson
 import { parse } from 'https://cdn.skypack.dev/papaparse';
 
@@ -7,8 +7,9 @@ import { dash } from './common';
 
 let columns = ['text', 'score'];
 const allfiles = []; 
-const ds = dataset('texts', store);
-const table = datasetTable(ds, columns);
+
+export const ds = dataset('texts', store);
+export const table = datasetTable(ds, columns);
 
 const myFileUpload = fileUpload();
 myFileUpload.title = '1. Upload data file';
@@ -74,7 +75,7 @@ myFileUpload.$files.subscribe(async (x) => {
 
 const textBoard = textArea('add more text here...');
 textBoard.title = '3. Manually add data';
-const scoreBoard = textArea('give score...');
+const scoreBoard = textInput('give score...');
 scoreBoard.title = '4. Score the text';
 const addBtn = button('Admit');
 addBtn.title = '5. Admit this data';
@@ -84,7 +85,7 @@ addBtn.$click.subscribe(async() => {
 })
 
 
-export function setup(dash) {
+export function setupData(dash) {
   dash.page('Load Data').sidebar(myFileUpload, loadDataBtn, info).use(table);
   dash.page('Manually Add Data').sidebar(textBoard, scoreBoard, addBtn).use(table);
 
