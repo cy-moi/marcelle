@@ -97,4 +97,12 @@ export class TableServiceProvider<
     this.update();
     return removed;
   }
+
+  // async change(i: number, col: string, value: string): Promise<T> {
+  //   const changed = get(this.data)[i];
+  //   console.log(this.data);
+  //   // await this.service.remove(removed.id);
+  //   this.update();
+  //   return changed;
+  // }
 }

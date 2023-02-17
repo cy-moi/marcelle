@@ -9,7 +9,7 @@
 </script>
 
 <ViewContainer {title}>
-  <div class="grow">
+  <div class="grow whitespace-pre-line">
     {#if $text}
       {@html $text}
     {/if}

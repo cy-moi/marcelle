@@ -32,6 +32,13 @@ export abstract class TableDataProvider<
     return null;
   }
 
+  // async change(i: number, content: T): Promise<void> {
+  //   const data = get(this.data);
+  //   if (i >= 0 && i < data.length) {
+  //     data[i] = content;
+  //   }
+  // }
+
   abstract update(): Promise<void>;
   abstract delete(i: number): Promise<T>;
   abstract page(i: number): Promise<void>;

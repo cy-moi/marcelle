@@ -117,6 +117,13 @@
 						<TableContentCell
 							{type}
 							value={item[name]}
+							on:input={({detail})=>{
+								console.log('input',type, detail, name, item)
+								
+								// $data[i] = {...item, [name]: detail};
+								// localStorage.setItem('instances-texts', JSON.stringify($data));
+
+							}}
 							on:action={({ detail }) => {
 								propagateAction([detail, i]);
 							}}

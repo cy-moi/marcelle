@@ -53,6 +53,10 @@
 		{value.toPrecision(2)}
 	{:else}
 		{value}
+		<!-- <input bind:value={value} on:input={() => {
+			// console.log((event?.target? as any).value)
+			dispatch('input', value)
+		}}/> -->
 	{/if}
 </td>
 
