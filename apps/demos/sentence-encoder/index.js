@@ -5,6 +5,8 @@ import { sentenceEncoder, huggingfaceModel } from '../../../packages/core';
 import { similarity } from './helper';
 import { setupData } from './uploadData';
 import { setupAugment } from './augmentation';
+import { setup as setupCharts } from './charts';
+
 
 const encoder = sentenceEncoder();
 const loadDataBtn = button('Load Data');
@@ -27,7 +29,7 @@ encodeBtn.$click.subscribe(async() => {
 setupData(dash);
 setupAugment(dash);
 // dash.page("Sentence Encoder").use(encoder, loadDataBtn, info, encodeBtn, results);
-dash.page("Visualize");
+setupCharts(dash);
 dash.page("Model Training");
 dash.page("Testing");
 dash.page("Export & Usage");

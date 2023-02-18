@@ -5,12 +5,12 @@ import { parse } from 'https://cdn.skypack.dev/papaparse';
 import { store } from './common';
 import { dash } from './common';
 
-let columns = ['text', 'score'];
+export const columns = ['text', 'score'];
 const allfiles = []; 
 
 export const ds = dataset('texts', store);
 export const table = datasetTable(ds, columns);
-
+table.$selected
 const myFileUpload = fileUpload();
 myFileUpload.title = '1. Upload data file';
 myFileUpload.$files.subscribe(async (x) => {
