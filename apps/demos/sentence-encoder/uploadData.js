@@ -5,7 +5,7 @@ import { parse } from 'https://cdn.skypack.dev/papaparse';
 import { store } from './common';
 import { dash } from './common';
 
-export const columns = ['text', 'score'];
+export const columns = ['score', 'text'];
 const allfiles = []; 
 
 export const ds = dataset('texts', store);
@@ -87,7 +87,7 @@ addBtn.$click.subscribe(async() => {
 
 export function setupData(dash) {
   dash.page('Load Data').sidebar(myFileUpload, loadDataBtn, info).use(table);
-  dash.page('Manually Add Data').sidebar(textBoard, scoreBoard, addBtn).use(table);
+  dash.page('Manually Clean').sidebar(textBoard, scoreBoard, addBtn).use(table);
 
   dash.$page.subscribe((p) => {
     // trainingSetTable.singleSelection = p.includes('testing');

@@ -8,3 +8,7 @@ export function similarity(a, b) {
     return dot(a, b) / (magnitudeA * magnitudeB);  
   else return false  
 }
+
+export function magnitude(a) {
+  return Math.sqrt(dot(a, a));
+}

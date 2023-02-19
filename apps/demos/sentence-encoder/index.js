@@ -6,32 +6,17 @@ import { similarity } from './helper';
 import { setupData } from './uploadData';
 import { setupAugment } from './augmentation';
 import { setup as setupCharts } from './charts';
-
-
-const encoder = sentenceEncoder();
-const loadDataBtn = button('Load Data');
-const info = text('');
-// const result = text('')
-const s = sentences.default;
-loadDataBtn.$click.subscribe(() => {
-  s.forEach(i => info.$value.set(info.$value.get() + i));
-})
-
-const encodeBtn = button ('Get Embeddings & Calc Similarity');
-const results = text('');
-results.title = "Sentences Similarity";
-encodeBtn.$click.subscribe(async() => {
-  const res = await encoder.process(s);
-  results.$value.set(similarity(res[0], res[1]))
-})
-
+import { setup as setupEncoder } from './preprocessing';
+import { setup as setupTrain } from './training';
 
 setupData(dash);
 setupAugment(dash);
 // dash.page("Sentence Encoder").use(encoder, loadDataBtn, info, encodeBtn, results);
+setupEncoder(dash);
 setupCharts(dash);
-dash.page("Model Training");
+setupTrain(dash)
+// dash.page("Model Training");
 dash.page("Testing");
-dash.page("Export & Usage");
+// dash.page("Export & Usage");
 
 dash.show();
