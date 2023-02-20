@@ -7,10 +7,11 @@ import {
 } from '@marcellejs/core';
 import { store } from './common';
 import { ds } from './uploadData';
+import { training } from './preprocessing';
 
 export function processDataset() {
   // x : embeddings
-  return ds.items().map((instance) => ({
+  return training.items().map((instance) => ({
     x: [
         instance['log'],
         instance['length']

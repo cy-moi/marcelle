@@ -1,6 +1,7 @@
 import { dash } from './common';
 import {
   button,
+  select,
   dataset,
   datasetTable,
   datasetScatter,
@@ -34,7 +35,14 @@ const s = sentences.default;
 const encodeBtn = button('Get Embeddings');
 const magniBtn = button('Get Magnitudes');
 const padding = button('Padding Data');
-const split = button('Split Train/Test Randomly');
+const splitRate = select(["40%","50%", "60%"]);
+splitRate.title = "Split Data For Training";
+const split = button('Split');
+
+export const training = dataset('training', store);
+const trainTable = datasetTable(training, columns);
+export const testing = dataset('testing', store);
+const testTable = datasetTable(testing, columns);
 
 encodeBtn.$click.subscribe(async () => {
   ds.items().forEach(async (instance, index) => {
@@ -82,6 +90,20 @@ padding.$click.subscribe(() => {
 
 })
 
+split.$click.subscribe(() => {
+  const scheme = splitRate.$value.get();
+  const rate = {
+    '40%': 0.4,
+    '50%':0.5,
+    '60%':0.6
+  }
+  ds.items().forEach(async(instance) => {
+    const {score, embeddings, magnitude, log, length, text} = instance;
+    if(Math.random() <= rate[scheme]) await training.create({score, embeddings, magnitude, log, length, text});
+    else await testing.create({score, embeddings, magnitude, log, length, text});
+  })
+})
+
 export const setup = (dash) => {
-  dash.page('preprocess').sidebar(encodeBtn, magniBtn).use(embeddingTable);
+  dash.page('preprocess').sidebar(encodeBtn, magniBtn, splitRate, split).use(embeddingTable, [trainTable, testTable]);
 };
