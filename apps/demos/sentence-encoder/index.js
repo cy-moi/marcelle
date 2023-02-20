@@ -8,15 +8,17 @@ import { setupAugment } from './augmentation';
 import { setup as setupCharts } from './charts';
 import { setup as setupEncoder } from './preprocessing';
 import { setup as setupTrain } from './training';
+import {setup as setupTest} from './testing';
 
 setupData(dash);
 setupAugment(dash);
 // dash.page("Sentence Encoder").use(encoder, loadDataBtn, info, encodeBtn, results);
 setupEncoder(dash);
 setupCharts(dash);
-setupTrain(dash)
+setupTrain(dash);
+setupTest(dash);
 // dash.page("Model Training");
-dash.page("Testing");
+// dash.page("Testing");
 // dash.page("Export & Usage");
 
 dash.show();

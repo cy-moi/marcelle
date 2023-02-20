@@ -76,7 +76,7 @@ magniBtn.$click.subscribe(() => {
     }, [])
     const logs = mags.map(m => Math.log(m))
     const MAGIC = 10000000;
-    console.log(logs.reduce((sum, cur) => sum += cur, 0)/logs.length * MAGIC)
+    // console.log(logs.reduce((sum, cur) => sum += cur, 0)/logs.length * MAGIC)
     ds.update(id, {
       ...instance,
       magnitude: mags,
