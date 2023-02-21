@@ -9,6 +9,7 @@ import { setup as setupCharts } from './charts';
 import { setup as setupEncoder } from './preprocessing';
 import { setup as setupTrain } from './training';
 import {setup as setupTest} from './testing';
+import {setup as setupHF} from './huggingface';
 
 setupData(dash);
 setupAugment(dash);
@@ -17,6 +18,7 @@ setupEncoder(dash);
 setupCharts(dash);
 setupTrain(dash);
 setupTest(dash);
+setupHF(dash);
 // dash.page("Model Training");
 // dash.page("Testing");
 // dash.page("Export & Usage");
