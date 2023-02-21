@@ -74,20 +74,41 @@ magniBtn.$click.subscribe(() => {
       res.push(magnitude(e));
       return res;
     }, [])
-    const logs = mags.map(m => Math.log(m))
-    const MAGIC = 10000000;
+    const logs = mags.map(m => m)
+    // const MAGIC = 10000000;
     // console.log(logs.reduce((sum, cur) => sum += cur, 0)/logs.length * MAGIC)
     ds.update(id, {
       ...instance,
       magnitude: mags,
-      log: logs.reduce((sum, cur) => sum += cur, 0)/logs.length * MAGIC,
+      log: logs.reduce((sum, cur) => sum += cur, 0)/logs.length,
       length: text.split('.').length
     });
   });
 });
 
-padding.$click.subscribe(() => {
+padding.$click.subscribe(async () => {
+  const maxlen = await ds.items().reduce((max, instance) => {
+    const { embeddings } = instance;
+    if(embeddings.length > max) return embeddings.length;
+    else return max;
+  }, 0)
+  console.log(maxlen)
+  ds.items().forEach((instance) => {
+    const { id, embeddings } = instance;
+    if(embeddings.length < maxlen) {
+      const one = Array.from({length: 512}, (v, i) => 0);
+      const padding = Array.from({length: maxlen - embeddings.length}, (v,i) => one);
+      const newEmbed = [...embeddings, ...padding];
+      console.log(maxlen, newEmbed)
+      ds.update(id, {
+        ...instance,
+        embeddings: newEmbed
+      });
+    }
+    
+    // console.log(logs.reduce((sum, cur) => sum += cur, 0)/logs.length * MAGIC)
 
+  });
 })
 
 split.$click.subscribe(() => {
@@ -105,5 +126,5 @@ split.$click.subscribe(() => {
 })
 
 export const setup = (dash) => {
-  dash.page('preprocess').sidebar(encodeBtn, magniBtn, splitRate, split).use(embeddingTable, [trainTable, testTable]);
+  dash.page('preprocess').sidebar(encodeBtn, padding, magniBtn, splitRate, split).use(embeddingTable, [trainTable, testTable]);
 };

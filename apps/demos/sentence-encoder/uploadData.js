@@ -43,7 +43,7 @@ async function loadData(ds, rawCsv) {
       for (const instance of data) {
 
         const d = instance.reduce((obj, cur, ind) => {
-          if (columns[ind]) obj = { ...obj, [columns[ind]]: cur };
+          if (columns[ind]) obj = { ...obj, [columns[ind]]: `${cur}_` };
           return obj;
         }, {});
 
@@ -73,21 +73,21 @@ myFileUpload.$files.subscribe(async (x) => {
   info.$value.set(`${allfiles.reduce((str, cur) => {return str += cur.name + ' \n'}, '')}`)
 });
 
-const textBoard = textArea('add more text here...');
-textBoard.title = '3. Manually add data';
-const scoreBoard = textInput('give score...');
-scoreBoard.title = '4. Score the text';
-const addBtn = button('Admit');
-addBtn.title = '5. Admit this data';
-addBtn.$click.subscribe(async() => {
-  console.log(scoreBoard.$value.get())
-  await ds.create({text: textBoard.$value.get(), score: `${scoreBoard.$value.get()}`});
-})
+// const textBoard = textArea('add more text here...');
+// textBoard.title = '3. Manually add data';
+// const scoreBoard = textInput('give score...');
+// scoreBoard.title = '4. Score the text';
+// const addBtn = button('Admit');
+// addBtn.title = '5. Admit this data';
+// addBtn.$click.subscribe(async() => {
+//   console.log(scoreBoard.$value.get())
+//   await ds.create({text: textBoard.$value.get(), score: `${scoreBoard.$value.get()}`});
+// })
 
 
 export function setupData(dash) {
   dash.page('Load Data').sidebar(myFileUpload, loadDataBtn, info).use(table);
-  dash.page('Manually Clean').sidebar(textBoard, scoreBoard, addBtn).use(table);
+  // dash.page('Manually Add Data').sidebar(textBoard, scoreBoard, addBtn).use(table);
 
   dash.$page.subscribe((p) => {
     // trainingSetTable.singleSelection = p.includes('testing');

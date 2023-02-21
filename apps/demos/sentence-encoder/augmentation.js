@@ -22,7 +22,7 @@ connectModel.$click.subscribe(() => {
 const textPrompt = textArea('');
 const generateBtn = button('Praphrase Text');
 
-generateBtn.title = 'pegasus paraphrase model';
+generateBtn.title = 'Paraphrase Selected Entries';
 generateBtn.$click.subscribe(async () => {
   console.log(table.$selection.get());
   const inputs = table.$selection.get();
